@@ -2,75 +2,17 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>        
 #include <string.h>
+
+#include "version.h"
 
 typedef struct {
   char a;
 } status_data;
 
-
-typedef struct {
-  int major;
-  int minor;
-} version;
-
-int version_from_string(version *v, const char* s) {
-
-  int idx = 0;
-  
-  int major = atoi(s + 1);
-  while (*s++ != '_') idx++;      
-  
-  int minor = atoi(s);
-  
-  if (major > v->major) {
-    v->major = major;
-    v->minor = minor;
-    return 2;
-  } else if (v->major == major && minor > v->minor) {
-    v->minor = minor;
-    return 1;
-  }
-  
-  return 0;
-}
-
-int comp_version(version* v1, version* v2)
-{
-  
-  if(v1->major == v2->major && v1->minor > v2->minor){
-    return 1;
-  }
-
-  if(v1->major == v2->major && v1->minor < v2->minor){
-    return -1;
-  }
-
-  if(v1->major > v2->major){
-    return 1;
-  }
-
-  if(v1->major < v2->major){
-    return -1;
-  }
-
-  return 0;
-}
-
-typedef struct { 
-  char* name; 
-  struct Node* next;
-} list; 
-
-typedef struct  {
-  struct list *filelist;
-} diff_data;
-
-
 int file_cb(const git_diff_delta *delta,
-                 float progress,
-                 void *payload)
+            float progress,
+            void *payload)
 {
   version *v = (version*) payload;
   version this_version = {0,0};
@@ -120,7 +62,8 @@ int max_versoin_in_tree(version* version, const git_tree *tree)
 }
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 
   git_repository *repo = NULL;
   
@@ -130,7 +73,7 @@ int main(int argc, char* argv[]) {
   if (argc > 1) {
     path = argv[1];
   } else {
-    path = "/home/knobo/prog/testgit";
+    path = (char*)("/home/knobo/prog/testgit");
   }
            
   int init_error = git_repository_init(&repo, path, false);
@@ -144,9 +87,9 @@ int main(int argc, char* argv[]) {
   int revparse_head_error = git_revparse_single(&this_tree, repo, "HEAD:resources/db/migrations");
 
   if(revparse_head_error) {
-      const git_error *e = git_error_last();
-      printf("revparse_head_error error %d\n%s\n", revparse_head_error, e->message);
-      exit(-1);
+    const git_error *e = git_error_last();
+    printf("revparse_head_error error %d\n%s\n", revparse_head_error, e->message);
+    exit(-1);
   }
   
   git_object *that_tree = NULL;
@@ -162,9 +105,9 @@ int main(int argc, char* argv[]) {
   printf("Max version %d-%d\n", version.major, version.minor);
   
   if(revparse_master_error) {
-      const git_error *e = git_error_last();
-      printf("revparse_master_error error %d\n%s\n", revparse_master_error, e->message);
-      exit(-1);
+    const git_error *e = git_error_last();
+    printf("revparse_master_error error %d\n%s\n", revparse_master_error, e->message);
+    exit(-1);
   }
 
   
@@ -172,9 +115,9 @@ int main(int argc, char* argv[]) {
   int diff_error = git_diff_tree_to_tree(&diff, repo, (git_tree*)this_tree, (git_tree*)that_tree, NULL /* &opts */);
   
   if(diff_error) {
-      const git_error *e = git_error_last();
-      printf("git_diff_tree_to_tree error %d\n%s\n", diff_error, e->message);
-      exit(-1);
+    const git_error *e = git_error_last();
+    printf("git_diff_tree_to_tree error %d\n%s\n", diff_error, e->message);
+    exit(-1);
   }
     
   int for_each_error = git_diff_foreach(diff, file_cb, NULL, NULL, NULL, &version);

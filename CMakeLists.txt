@@ -4,7 +4,7 @@ project (fix_migrations)
 
 enable_testing()
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-add_executable(fix_migrations fix_migrations.c)
+add_executable(fix_migrations fix_migrations.c version.c)
 
 target_link_libraries (fix_migrations LINK_PUBLIC git2)
 
