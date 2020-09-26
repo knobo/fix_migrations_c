@@ -8,16 +8,6 @@
 #include "version.h"
 
 typedef struct {
-  char a;
-} status_data;
-
-typedef struct {
-  char *repo;
-  char *migrations;
-  version *version;
-} conf;
-
-typedef struct {
   int file_count;
   char *repo_path;
   char *resource_path;
