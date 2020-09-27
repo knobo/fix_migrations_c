@@ -1,6 +1,16 @@
 #include <stdlib.h>
 #include "version.h"
 
+void inc_version(version* version) {
+ 
+  if(version->minor == 99) {
+    version->major++;
+    version->minor = 0;
+  } else {
+    version->minor++;
+  }
+}
+
 int version_from_string(version *v, const char* s) {
 
   int idx = 0;
@@ -22,7 +32,7 @@ int version_from_string(version *v, const char* s) {
   return 0;
 }
 
-int comp_version(version* v1, version* v2)
+int comp_versions(version* v1, version* v2)
 {
   
   if(v1->major == v2->major && v1->minor > v2->minor){
